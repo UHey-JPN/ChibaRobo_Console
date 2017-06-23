@@ -41,7 +41,7 @@ public class UdpSocket implements Runnable{
 		// open socket
 		try {
 			soc = new DatagramSocket(PORT_NUM);
-			log_mes.log_println("Open UDP Port(" + soc.getLocalPort() + ")");
+			this.std_out("Open UDP Port(" + soc.getLocalPort() + ")");
 		} catch (SocketException e) {
 			e.printStackTrace();
 			JFrame f = new JFrame();
@@ -84,9 +84,9 @@ public class UdpSocket implements Runnable{
 	}
 	private void process_state_packet(String[] pac_data){
 		if( pac_data.length < 12){
-			log_mes.log_println("packet length is illegal(in show state packet process):" + pac_data.length);
+			System.out.println("packet length is illegal(in show state packet process):" + pac_data.length);
 			for(int i=0; i < pac_data.length; i++){
-				log_mes.log_println("\t" + pac_data[i]);
+				System.out.println("\t" + pac_data[i]);
 			}
 			return;
 		}
@@ -96,12 +96,12 @@ public class UdpSocket implements Runnable{
 		String mode = pac_data[3];
 		String[] start_time = pac_data[4].split(",");
 		if( start_time.length != 7 ){
-			log_mes.log_println("start time is illegal(in show state packet process).");
+			System.out.println("start time is illegal(in show state packet process).");
 			return;
 		}
 		String[] str_score = pac_data[5].split(",");
 		if( str_score.length != 2){
-			log_mes.log_println("score length is illegal(in show state packet process).");
+			System.out.println("score length is illegal(in show state packet process).");
 			return;
 		};
 		int[] score = {Integer.parseInt(str_score[0]), Integer.parseInt(str_score[1])};
@@ -120,7 +120,7 @@ public class UdpSocket implements Runnable{
 		
 		// send UDP Keep Alive data
 		if(server_socket_receive == false){
-			log_mes.log_println("socket number is not informed(in show state packet process).");
+			System.out.println("socket number is not informed(in show state packet process).");
 			return;
 		}
 		
@@ -173,7 +173,7 @@ public class UdpSocket implements Runnable{
 		if(pac_data[1].equals(ip)){
 			server_ip = pac_data[1];
 		}else{
-			log_mes.log_println("server may be illegal.");
+			this.std_out("server may be illegal.");
 			server_ip = ip;
 		}
 		
@@ -222,7 +222,7 @@ public class UdpSocket implements Runnable{
 				soc.receive(pac);
 			} catch (IOException e) {
 				// エラーのスタックトレースを表示
-				log_mes.log_print(e);
+				this.std_out(e);
 			}
 			
 			String str_packet = new String(buf);
@@ -240,7 +240,7 @@ public class UdpSocket implements Runnable{
 						buf_array.add(line);
 					}
 				} catch (IOException e) {
-					log_mes.log_print(e);
+					e.printStackTrace();
 				}
 				pac_split = buf_array.toArray(new String[buf_array.size()]);
 			}
@@ -255,9 +255,29 @@ public class UdpSocket implements Runnable{
 				// log_mes.log_println("Get Packet - server");
 				process_server_packet(pac_split, pac.getAddress().getHostAddress());
 			}else{
-				log_mes.log_println("Get Packet(unknow packet)\n" + str_packet);
+				this.std_out("Get Packet(unknow packet)\n" + str_packet);
 			}
 		}
 	}
 
+	
+///////////////////////////////////////////////////////////////////
+// standard output
+///////////////////////////////////////////////////////////////////
+	private void std_out(String str){
+		if(this.log_mes == null){
+			System.out.println(str);
+		}else{
+			log_mes.log_println(str);
+		}
+		
+	}
+	private void std_out(Exception e){
+		if(this.log_mes == null){
+			e.printStackTrace();
+		}else{
+			log_mes.log_print(e);
+		}
+		
+	}
 }
