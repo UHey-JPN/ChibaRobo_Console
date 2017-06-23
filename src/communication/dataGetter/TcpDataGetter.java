@@ -1,4 +1,4 @@
-package communication.data_getter;
+package communication.dataGetter;
 
 import java.io.BufferedReader;
 import java.io.IOException;

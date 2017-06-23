@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import communication.data_getter.TcpDataGetter;
+import communication.dataGetter.DatabaseGetterListener;
+import communication.dataGetter.TcpDataGetter;
 import communication.udp.ServerUpdateListener;
-import communication.data_getter.DatabaseGetterListener;
 import data.communication.ServerData;
 import data.exception.DataNotFoundException;
 import window.cardTournament.UpdateDatabaseListener;

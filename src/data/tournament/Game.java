@@ -6,8 +6,8 @@ import java.util.Deque;
 import java.util.Queue;
 import java.util.concurrent.Executor;
 
-import communication.data_getter.DatabaseGetterListener;
-import communication.data_getter.TcpDataGetter;
+import communication.dataGetter.DatabaseGetterListener;
+import communication.dataGetter.TcpDataGetter;
 import communication.udp.ServerUpdateListener;
 import data.communication.ServerData;
 import data.exception.IllegalTypeOfClassException;
