@@ -20,6 +20,7 @@ implements
 TcpConnectionListener, SetModeListener, SetScoreListener, 
 SetWinnerListener, ClearDataListener, UploadDataListener{
 	public static final String CRLF = "\r\n";
+	public static final int TIMEOUT = 2000;
 	
 	private Socket soc;
 	private UdpSocket udp;
@@ -50,7 +51,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 			try {
 				soc = new Socket();
 				soc.connect(addr, 200);
-				soc.setSoTimeout(2000);
+				soc.setSoTimeout(TIMEOUT);
 				log_mes.log_println("connected to server("+ soc.getRemoteSocketAddress() +")");
 			} catch (IOException e) {
 				log_mes.log_print(e);
