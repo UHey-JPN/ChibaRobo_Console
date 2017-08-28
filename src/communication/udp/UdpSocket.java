@@ -16,7 +16,7 @@ import javax.swing.JOptionPane;
 
 import data.communication.ServerData;
 import data.communication.StateData;
-import window.main.LogMessageAdapter;
+import window.logger.LogMessageAdapter;
 
 public class UdpSocket implements Runnable{
 	public static final int PORT_NUM = 58239;

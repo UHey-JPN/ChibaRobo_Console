@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import main.SettingManager;
+import window.logger.LogMessageAdapter;
 import window.subMain.SubMain;
 import window.subMenu.SubMenu;
 

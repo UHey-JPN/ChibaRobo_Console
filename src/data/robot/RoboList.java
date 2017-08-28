@@ -12,7 +12,7 @@ import data.communication.ServerData;
 import data.exception.DataNotFoundException;
 import window.cardTournament.UpdateDatabaseListener;
 import window.cardTournament.UpdateTourViewListener;
-import window.main.LogMessageAdapter;
+import window.logger.LogMessageAdapter;
 
 public class RoboList implements ServerUpdateListener, DatabaseGetterListener, UpdateDatabaseListener{
 	private List<Robot> list;

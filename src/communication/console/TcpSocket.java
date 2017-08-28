@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import communication.udp.UdpSocket;
 import data.communication.FileDataManager;
 import main.SettingManager;
-import window.main.LogMessageAdapter;
+import window.logger.LogMessageAdapter;
 
 import java.io.BufferedReader;
 import java.io.IOException;

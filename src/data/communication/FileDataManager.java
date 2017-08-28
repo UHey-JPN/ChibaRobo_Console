@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import main.SettingManager;
-import window.main.LogMessageAdapter;
+import window.logger.LogMessageAdapter;
 
 public class FileDataManager implements CheckIntegrityListener {
 	private final String DB_FOLDER = "DB/";
