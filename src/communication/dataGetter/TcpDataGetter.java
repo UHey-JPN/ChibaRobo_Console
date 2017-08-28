@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import data.communication.ServerData;
-import window.main.LogMessageAdapter;
+import window.logger.LogMessageAdapter;
 
 public class TcpDataGetter implements Runnable {
 	public static enum TYPE {

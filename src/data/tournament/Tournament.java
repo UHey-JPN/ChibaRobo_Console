@@ -8,7 +8,7 @@ import communication.udp.ServerUpdateListener;
 import communication.udp.TournamentUpdateListener;
 import window.cardTournament.UpdateDatabaseListener;
 import window.cardTournament.UpdateTourViewListener;
-import window.main.LogMessageAdapter;
+import window.logger.LogMessageAdapter;
 
 public class Tournament implements TournamentUpdateListener{
 	private Game game_data;

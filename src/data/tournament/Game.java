@@ -12,7 +12,7 @@ import communication.udp.ServerUpdateListener;
 import data.communication.ServerData;
 import data.exception.IllegalTypeOfClassException;
 import window.cardTournament.UpdateDatabaseListener;
-import window.main.LogMessageAdapter;
+import window.logger.LogMessageAdapter;
 
 public class Game implements ServerUpdateListener, DatabaseGetterListener, UpdateDatabaseListener {
 	public final static int TYPE_TEAM = 0;

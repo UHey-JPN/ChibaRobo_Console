@@ -1,4 +1,4 @@
-package window.main;
+package window.logger;
 
 public interface LogMessageAdapter {
 	public void log_println(String x);
