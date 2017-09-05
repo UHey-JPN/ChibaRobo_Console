@@ -96,7 +96,7 @@ public class ChibaRobo_Console {
 	}
 	
 	public static void main(String[] args) {
-		//System.setProperty("file.encoding", "UTF-8");
+		System.setProperty("file.encoding", "UTF-8");
 		new ChibaRobo_Console();
 	}
 
