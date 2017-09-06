@@ -27,40 +27,47 @@ public class UpdateDataPanel extends JPanel implements ActionListener, OpeLockLi
 	private CheckIntegrityListener integrity_listener;
 	private UploadDataListener update_data_listener;
 	
-	private JButton[] btn_list = {
-			new JButton("Update Robot Data"),
-			new JButton("Update Team Data"),
-			new JButton("Update Tournament Data"),
-			new JButton("Confirm the Integrity"),
-			new JButton("Reset Robot Data"),
-			new JButton("Reset Team Data"),
-			new JButton("no function"),
-			new JButton("no function"),
-	};
-	private JPanel[] panel_list = {
-			new JPanel(),
-			new JPanel(),
-			new JPanel(),
-			new JPanel()
-	};
+	private enum BTN_LIST{
+		NO_FUNCTION0("no function"),
+		UPDATE_ROBOT("Update Robot Data"),
+		UPDATE_TEAM("Update Team Data"),
+		UPDATE_TOURNAMENT("Update Tournament Data"),
+		CHECK_INTEGRITY("Confirm the Integrity"),
+		RESET_ROBOT("Reset Robot Data"),
+		RESET_TEAM("Reset Team Data"),
+		NO_FUNCTION1("no function");
+		
+		private String label;
+		
+		BTN_LIST(String label){
+			this.label = label;
+		}
+		
+		public String get_label(){
+			return label;
+		}
+	}
+	private JButton[] btn_list = new JButton[BTN_LIST.values().length];
 
 	public UpdateDataPanel(){
-		panel_list = new JPanel[btn_list.length];
-		for(int i = 0; i < panel_list.length; i++) panel_list[i] = new JPanel();
+		for(int i=0; i < BTN_LIST.values().length; i++){
+			btn_list[i] = new JButton( BTN_LIST.values()[i].get_label() );
+		}
 		
 		this.setOpaque(false);
 		this.setBorder(new LineBorder(Color.BLACK));
 		
 		this.setLayout(new GridLayout(0,4));
 		
-		for(int i = 0; i < panel_list.length; i++){
-			panel_list[i].setOpaque(false);
-			panel_list[i].setBorder(new EmptyBorder(10,10,10,10));
-			panel_list[i].setLayout(new BorderLayout());
+		for(int i = 0; i < btn_list.length; i++){
+			JPanel panel_list = new JPanel(); // 余白のためのJPanel
+			panel_list.setOpaque(false);
+			panel_list.setBorder(new EmptyBorder(10,10,10,10));
+			panel_list.setLayout(new BorderLayout());
 			
 			btn_list[i].setFont(new Font("", Font.PLAIN, 20));
-			panel_list[i].add(btn_list[i]);
-			this.add(panel_list[i]);
+			panel_list.add(btn_list[i]);
+			this.add(panel_list);
 		}
 		
 		for(int i = 0; i < btn_list.length; i++){
@@ -96,32 +103,26 @@ public class UpdateDataPanel extends JPanel implements ActionListener, OpeLockLi
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == btn_list[0]){
-			// update_robot
+		if(e.getSource() == btn_list[BTN_LIST.UPDATE_ROBOT.ordinal()]){
 			update_data_listener.update_data(UploadDataListener.TYPE_ROBOT);
 			
-		}else if(e.getSource() == btn_list[1]){
-			// update_team
+		}else if(e.getSource() == btn_list[BTN_LIST.UPDATE_TEAM.ordinal()]){
 			update_data_listener.update_data(UploadDataListener.TYPE_TEAM);
 			
-		}else if(e.getSource() == btn_list[2]){
-			// update_tnmt
+		}else if(e.getSource() == btn_list[BTN_LIST.UPDATE_TOURNAMENT.ordinal()]){
 			update_data_listener.update_data(UploadDataListener.TYPE_TOURNAMENT);
 			
-		}else if(e.getSource() == btn_list[3]){
-			// confirm a integrity
+		}else if(e.getSource() == btn_list[BTN_LIST.CHECK_INTEGRITY.ordinal()]){
 			if(integrity_listener.check_integrity()){
-				show_dialog(btn_list[3], "There is no problem.");
+				show_dialog(btn_list[BTN_LIST.CHECK_INTEGRITY.ordinal()], "There is no problem.");
 			}else{
-				show_dialog(btn_list[3], "Data has a problem.");
+				show_dialog(btn_list[BTN_LIST.CHECK_INTEGRITY.ordinal()], "Data has a problem.");
 			}
 			
-		}else if(e.getSource() == btn_list[4]){
-			// Reset Robot Data
+		}else if(e.getSource() == btn_list[BTN_LIST.RESET_ROBOT.ordinal()]){
 			clear_listener.clear_data(ClearDataListener.TYPE_ROBOT);
 			
-		}else if(e.getSource() == btn_list[5]){
-			// Reset Team Data
+		}else if(e.getSource() == btn_list[BTN_LIST.RESET_TEAM.ordinal()]){
 			clear_listener.clear_data(ClearDataListener.TYPE_TEAM);
 			
 		}
