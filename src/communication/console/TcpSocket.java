@@ -269,9 +269,9 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 
 
 	@Override
-	public void update_data(int type) {
+	public void update_data(TYPE type) {
 		if( soc != null ){
-			if(type == UploadDataListener.TYPE_ROBOT){
+			if(type == UploadDataListener.TYPE.ROBOT){
 				out.println("add robot");
 				ArrayList<String> robot_list = fdm.get_robot();
 				for(String robot : robot_list){
@@ -281,7 +281,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 				}
 				out.println("EOF");
 				
-			}else if(type == UploadDataListener.TYPE_TEAM){
+			}else if(type == UploadDataListener.TYPE.TEAM){
 				out.println("add team");
 				ArrayList<String> team_list = fdm.get_team();
 				for(String team : team_list){
@@ -291,7 +291,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 				}
 				out.println("EOF");
 				
-			}else if(type == UploadDataListener.TYPE_TOURNAMENT){
+			}else if(type == UploadDataListener.TYPE.TOURNAMENT){
 				int[] inte_team_list = fdm.get_tournament();
 				String team_list = "" + inte_team_list[0];
 				for(int i = 1; i < inte_team_list.length; i++){
