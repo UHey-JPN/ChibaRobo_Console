@@ -37,30 +37,22 @@ public class UpdateDataPanel extends JPanel implements ActionListener, OpeLockLi
 			new JButton("no function"),
 			new JButton("no function"),
 	};
-	private JPanel[] panel_list = {
-			new JPanel(),
-			new JPanel(),
-			new JPanel(),
-			new JPanel()
-	};
 
 	public UpdateDataPanel(){
-		panel_list = new JPanel[btn_list.length];
-		for(int i = 0; i < panel_list.length; i++) panel_list[i] = new JPanel();
-		
 		this.setOpaque(false);
 		this.setBorder(new LineBorder(Color.BLACK));
 		
 		this.setLayout(new GridLayout(0,4));
 		
-		for(int i = 0; i < panel_list.length; i++){
-			panel_list[i].setOpaque(false);
-			panel_list[i].setBorder(new EmptyBorder(10,10,10,10));
-			panel_list[i].setLayout(new BorderLayout());
+		for(int i = 0; i < btn_list.length; i++){
+			JPanel panel_list = new JPanel(); // 余白のためのJPanel
+			panel_list.setOpaque(false);
+			panel_list.setBorder(new EmptyBorder(10,10,10,10));
+			panel_list.setLayout(new BorderLayout());
 			
 			btn_list[i].setFont(new Font("", Font.PLAIN, 20));
-			panel_list[i].add(btn_list[i]);
-			this.add(panel_list[i]);
+			panel_list.add(btn_list[i]);
+			this.add(panel_list);
 		}
 		
 		for(int i = 0; i < btn_list.length; i++){
