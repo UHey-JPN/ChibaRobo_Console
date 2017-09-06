@@ -28,10 +28,10 @@ public class UpdateDataPanel extends JPanel implements ActionListener, OpeLockLi
 	private UploadDataListener update_data_listener;
 	
 	private enum BTN_LIST{
+		NO_FUNCTION0("no function"),
 		UPDATE_ROBOT("Update Robot Data"),
 		UPDATE_TEAM("Update Team Data"),
 		UPDATE_TOURNAMENT("Update Tournament Data"),
-		NO_FUNCTION0("no function"),
 		CHECK_INTEGRITY("Confirm the Integrity"),
 		RESET_ROBOT("Reset Robot Data"),
 		RESET_TEAM("Reset Team Data"),
@@ -47,7 +47,7 @@ public class UpdateDataPanel extends JPanel implements ActionListener, OpeLockLi
 			return label;
 		}
 	}
-	private JButton[] btn_list;
+	private JButton[] btn_list = new JButton[BTN_LIST.values().length];
 
 	public UpdateDataPanel(){
 		for(int i=0; i < BTN_LIST.values().length; i++){
