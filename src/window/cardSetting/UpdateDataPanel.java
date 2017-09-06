@@ -28,7 +28,7 @@ public class UpdateDataPanel extends JPanel implements ActionListener, OpeLockLi
 	private UploadDataListener update_data_listener;
 	
 	private enum BTN_LIST{
-		NO_FUNCTION0("no function"),
+		UPDATE_IMAGE("Update Image Data"),
 		UPDATE_ROBOT("Update Robot Data"),
 		UPDATE_TEAM("Update Team Data"),
 		UPDATE_TOURNAMENT("Update Tournament Data"),
@@ -104,13 +104,13 @@ public class UpdateDataPanel extends JPanel implements ActionListener, OpeLockLi
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btn_list[BTN_LIST.UPDATE_ROBOT.ordinal()]){
-			update_data_listener.update_data(UploadDataListener.TYPE_ROBOT);
+			update_data_listener.update_data(UploadDataListener.TYPE.ROBOT);
 			
 		}else if(e.getSource() == btn_list[BTN_LIST.UPDATE_TEAM.ordinal()]){
-			update_data_listener.update_data(UploadDataListener.TYPE_TEAM);
+			update_data_listener.update_data(UploadDataListener.TYPE.TEAM);
 			
 		}else if(e.getSource() == btn_list[BTN_LIST.UPDATE_TOURNAMENT.ordinal()]){
-			update_data_listener.update_data(UploadDataListener.TYPE_TOURNAMENT);
+			update_data_listener.update_data(UploadDataListener.TYPE.TOURNAMENT);
 			
 		}else if(e.getSource() == btn_list[BTN_LIST.CHECK_INTEGRITY.ordinal()]){
 			if(integrity_listener.check_integrity()){
