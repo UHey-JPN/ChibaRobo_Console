@@ -92,4 +92,15 @@ public class RoboList implements ServerUpdateListener, DatabaseGetterListener, U
 		this.update_robot_list();
 	}
 
+	
+	public ArrayList<String> get_img_list(){
+		ArrayList<String> ret = new ArrayList<String>();
+		synchronized(lock_obj){
+			for(Robot r : list){
+				ret.add(r.get_img());
+			}
+		}
+		return ret;
+	}
+
 }
