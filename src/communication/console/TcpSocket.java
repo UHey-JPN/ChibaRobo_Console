@@ -1,15 +1,18 @@
 package communication.console;
 
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import communication.udp.UdpSocket;
 import data.communication.FileDataManager;
+import data.image.Image;
 import main.SettingManager;
 import window.logger.LogMessageAdapter;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -310,5 +313,62 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 			log_mes.log_println("socket is not opened.");
 		}
 	}
+
+	
+	public synchronized boolean send_img(Image img) {
+		try {
+			out.println("image add " + img.get_name());	// 画像アップロードのコマンド
+			String[] respo = in.readLine().split(":");	// アップロード先の指示待ち
+			
+			if( !respo[0].equals("OK") ) return false;
+			
+			String[] soc_info = respo[1].split(",");
+			String addr = soc_info[0];
+			int port = Integer.parseInt(soc_info[1]);
+			img.upload(new InetSocketAddress(addr, port));
+			
+			// サーバーでの処理結果を確認
+			soc.setSoTimeout(0);
+			if(in.readLine().matches("OK")){
+				return true;
+			}else{
+				return false;
+			}
+		} catch (FileNotFoundException e) {
+			log_mes.log_println("File(" + img.get_name() + ") is not exist.");
+			return false;
+		} catch (IOException e) {
+			log_mes.log_print(e);
+			return false;
+		} finally {
+			try {
+				soc.setSoTimeout(TIMEOUT);
+			} catch (SocketException e) {
+				log_mes.log_print(e);
+			}
+		}
+	}
+
+	public String get_md5_list() {
+		String ret = "";
+		if( soc != null ){
+			out.println("image list");
+			try{
+				String result;
+				while( !(result = in.readLine()).matches("") ){
+					ret += result + CRLF;
+				}
+			} catch (SocketTimeoutException e){
+				log_mes.log_print(e);
+			} catch (IOException e) {
+				log_mes.log_print(e);
+			}
+			return ret;
+		}else{
+			log_mes.log_println("socket is not opened.");
+			return null;
+		}
+	}
+
 
 }
