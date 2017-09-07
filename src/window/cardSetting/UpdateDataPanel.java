@@ -112,11 +112,14 @@ public class UpdateDataPanel extends JPanel implements ActionListener, OpeLockLi
 		}else if(e.getSource() == btn_list[BTN_LIST.UPDATE_TOURNAMENT.ordinal()]){
 			update_data_listener.update_data(UploadDataListener.TYPE.TOURNAMENT);
 			
+		}else if(e.getSource() == btn_list[BTN_LIST.UPDATE_IMAGE.ordinal()]){
+			update_data_listener.update_data(UploadDataListener.TYPE.IMAGE);
+			
 		}else if(e.getSource() == btn_list[BTN_LIST.CHECK_INTEGRITY.ordinal()]){
 			if(integrity_listener.check_integrity()){
-				show_dialog(btn_list[BTN_LIST.CHECK_INTEGRITY.ordinal()], "There is no problem.");
+				show_dialog(null, "There is no problem.");
 			}else{
-				show_dialog(btn_list[BTN_LIST.CHECK_INTEGRITY.ordinal()], "Data has a problem.");
+				show_dialog(null, "Data has a problem.");
 			}
 			
 		}else if(e.getSource() == btn_list[BTN_LIST.RESET_ROBOT.ordinal()]){

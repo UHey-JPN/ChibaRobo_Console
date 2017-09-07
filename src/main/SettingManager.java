@@ -20,6 +20,7 @@ public class SettingManager {
 	private String robots_file_name = "robots.csv";
 	private String teams_file_name = "teams.csv";
 	private String tnmt_file_name = "tnmt.csv";
+	private String image_folder_name = "DB/img/";
 
 	private File file = new File("./resource/setting.INI");
 
@@ -69,6 +70,10 @@ public class SettingManager {
 					
 				}else if(line_split[0].equals("tnmt_file_name")){
 					tnmt_file_name = line_split[1];
+					
+				}else if(line_split[0].equals("image_folder_name")){
+					image_folder_name = line_split[1];
+					
 				}else{
 					report_syntax_err(line_num);
 					continue;
@@ -125,6 +130,9 @@ public class SettingManager {
 			bw.println("teams_file_name=" + teams_file_name);
 	
 			bw.println("tnmt_file_name=" + tnmt_file_name);
+			
+			bw.println("image_folder_name=" + image_folder_name);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -139,6 +147,7 @@ public class SettingManager {
 	public String get_robots_file_name(){ return this.robots_file_name; }
 	public String get_teams_file_name(){ return this.teams_file_name; }
 	public String get_tnmt_file_name(){ return this.tnmt_file_name; }
+	public String get_image_folder_name(){ return this.image_folder_name; }
 	
 	// setter
 	public void set_num_of_teams(int num_of_teams){
@@ -163,6 +172,10 @@ public class SettingManager {
 	}
 	public void set_tnmt_file_name(String tnmt_file_name){
 		this.tnmt_file_name = tnmt_file_name;
+		save_data();
+	}
+	public void set_image_folder_name(String image_folder_name){
+		this.image_folder_name = image_folder_name;
 		save_data();
 	}
 }

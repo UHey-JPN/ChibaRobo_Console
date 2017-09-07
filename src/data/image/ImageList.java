@@ -1,5 +1,6 @@
 package data.image;
 
+import java.awt.Component;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,6 +14,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import data.robot.RoboList;
 import window.logger.LogMessageAdapter;
 
@@ -20,13 +24,15 @@ public class ImageList {
 	public static final String CRLF = "\r\n";
 
 	private List<Image> image_list;
+	private RoboList robo_list;
 	private File folder;
 	private LogMessageAdapter log_mes;
 
-	public ImageList(String img_folder, LogMessageAdapter log_mes) {
+	public ImageList(String img_folder, LogMessageAdapter log_mes, RoboList robo_list) {
 		image_list = Collections.synchronizedList(new ArrayList<Image>());
 		this.folder = new File(img_folder);
 		this.log_mes = log_mes;
+		this.robo_list = robo_list;
 		
 		// フォルダーが存在しない場合、フォルダを生成
 		if( !folder.exists() ){
@@ -35,13 +41,22 @@ public class ImageList {
 		
 		// 画像用に指示された場所がフォルダーかどうかを確認する
 		if( !folder.isDirectory() ){
-			log_mes.log_println("Image Folder " + img_folder + "is not a directory.");
+			show_dialog(null, "Image Folder \"" + img_folder + "\" is not a directory.");
 			System.exit(1);
 		}
 		
 		this.update_list();
 	}
 	
+	public ImageList(String img_folder, LogMessageAdapter log_mes) {
+		this(img_folder, log_mes, null);
+	}
+
+	private void show_dialog(Component f, String str){
+		JLabel label = new JLabel(str);
+		JOptionPane.showMessageDialog(f, label);
+	}
+
 	/**
 	 * 画像を受信するメソッド。
 	 * 結果出力用のアウトプットストリームとコマンドラインで受け取ったファイル名を受け取り、
@@ -131,16 +146,21 @@ public class ImageList {
 	 * たぶん、事あるごとに呼び出したほうが良い
 	 */
 	public void update_list(){
-		image_list.clear();
-		File[] list = this.folder.listFiles();
-		Pattern pattern = Pattern.compile(".+\\..+"); // 隠しファイル以外を抽出
-		for(File f : list){
-			try {
-				if( pattern.matcher(f.getName()).find() ){
-					image_list.add(new Image(f, log_mes));
+		if(robo_list != null){
+			update_list(robo_list);
+			return;
+		}else{
+			image_list.clear();
+			File[] list = this.folder.listFiles();
+			Pattern pattern = Pattern.compile(".+\\..+"); // 隠しファイル以外を抽出
+			for(File f : list){
+				try {
+					if( pattern.matcher(f.getName()).find() ){
+						image_list.add(new Image(f, log_mes));
+					}
+				} catch (IOException e) {
+					log_mes.log_print(e);
 				}
-			} catch (IOException e) {
-				log_mes.log_print(e);
 			}
 		}
 	}
@@ -153,7 +173,7 @@ public class ImageList {
 		image_list.clear();
 		
 		for(String s : robo_list.get_img_list()){
-			File f = new File(folder.getName() + "/" + s);
+			File f = new File(folder.getAbsolutePath() + "/" + s);
 			if( f.exists() ){
 				try {
 					image_list.add(new Image(f, log_mes));
