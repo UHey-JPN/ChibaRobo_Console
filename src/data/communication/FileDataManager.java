@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import data.robot.RoboList;
 import main.SettingManager;
 import window.logger.LogMessageAdapter;
 
@@ -23,7 +24,7 @@ public class FileDataManager implements CheckIntegrityListener {
 		this.sm = sm;
 	}
 	
-	public ArrayList<String> get_robot(){
+	public ArrayList<String> get_robot_array(){
 		ArrayList<String> ret = new ArrayList<String>();
 		File file = new File(DB_FOLDER + sm.get_robots_file_name());
 		BufferedReader br = null;
@@ -55,7 +56,7 @@ public class FileDataManager implements CheckIntegrityListener {
 		return ret;
 	}
 
-	public ArrayList<String> get_team(){
+	public ArrayList<String> get_team_array(){
 		ArrayList<String> ret = new ArrayList<String>();
 		File file = new File(DB_FOLDER + sm.get_teams_file_name());
 		BufferedReader br = null;
@@ -87,7 +88,7 @@ public class FileDataManager implements CheckIntegrityListener {
 		return ret;
 	}
 	
-	public int[] get_tournament(){
+	public int[] get_tournament_array(){
 		int[] ret = null;
 		File file = new File(DB_FOLDER + sm.get_tnmt_file_name());
 		BufferedReader br = null;
@@ -121,6 +122,28 @@ public class FileDataManager implements CheckIntegrityListener {
 		return ret;
 	}
 	
+	public RoboList get_robolist(){
+		ArrayList<String> list = this.get_robot_array();
+		RoboList ret = new RoboList(null, log_mes);
+		for(String str : list){
+			String[] data_list = str.split(",");
+			if(data_list.length < 1){// コンマだけの行の可能性
+				continue;
+			}
+			
+			String data = data_list[1];
+			for(int i = 2; i < data_list.length; i++) data += "," + data_list[i];
+			
+			try {
+				int id = Integer.parseInt(data_list[0]);
+				ret.add(id, data);
+			} catch(NumberFormatException e) {
+				continue;
+			}
+		}
+		return ret;
+	}
+	
 	@Override
 	public boolean check_integrity(){
 		boolean ret = true;
@@ -130,7 +153,7 @@ public class FileDataManager implements CheckIntegrityListener {
 		// --------------------------------------------------------
 		// check tournament file
 		log_mes.log_println("check tournament file.");
-		int[] tournament = this.get_tournament();
+		int[] tournament = this.get_tournament_array();
 		if( tournament != null ){
 			if( tournament.length != sm.get_num_of_teams() ){
 				log_mes.log_println("出場チーム数がSetting画面とtournament fileで一致していません。( "+ sm.get_num_of_teams() +" vs "+ tournament.length +" )");
@@ -152,7 +175,7 @@ public class FileDataManager implements CheckIntegrityListener {
 		// --------------------------------------------------------
 		// check team file
 		log_mes.log_println("check team file.");
-		ArrayList<String> team = this.get_team();
+		ArrayList<String> team = this.get_team_array();
 		ArrayList<Integer> team_list = new ArrayList<Integer>();
 		ArrayList<Integer> robot_list_teamfile = new ArrayList<Integer>();
 		
@@ -197,7 +220,7 @@ public class FileDataManager implements CheckIntegrityListener {
 		// --------------------------------------------------------
 		// check robot file
 		log_mes.log_println("check robot file.");
-		ArrayList<String> robot = this.get_robot();
+		ArrayList<String> robot = this.get_robot_array();
 		ArrayList<Integer> robot_list = new ArrayList<Integer>();
 		ArrayList<RobotImg> image_list = new ArrayList<RobotImg>();
 		

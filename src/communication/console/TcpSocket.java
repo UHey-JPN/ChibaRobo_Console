@@ -5,12 +5,21 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
+
 import communication.udp.UdpSocket;
 import data.communication.FileDataManager;
+import data.exception.DataNotFoundException;
 import data.image.Image;
+import data.image.ImageList;
+import data.image.ImageListComparater;
+import data.robot.RoboList;
 import main.SettingManager;
 import window.logger.LogMessageAdapter;
 
+import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -273,7 +282,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 		if( soc != null ){
 			if(type == UploadDataListener.TYPE.ROBOT){
 				out.println("add robot");
-				ArrayList<String> robot_list = fdm.get_robot();
+				ArrayList<String> robot_list = fdm.get_robot_array();
 				for(String robot : robot_list){
 					if(robot.length() > 5){
 						out.println(robot);
@@ -283,7 +292,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 				
 			}else if(type == UploadDataListener.TYPE.TEAM){
 				out.println("add team");
-				ArrayList<String> team_list = fdm.get_team();
+				ArrayList<String> team_list = fdm.get_team_array();
 				for(String team : team_list){
 					if(team.length() > 4){
 						out.println(team);
@@ -292,25 +301,79 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 				out.println("EOF");
 				
 			}else if(type == UploadDataListener.TYPE.TOURNAMENT){
-				int[] inte_team_list = fdm.get_tournament();
+				int[] inte_team_list = fdm.get_tournament_array();
 				String team_list = "" + inte_team_list[0];
 				for(int i = 1; i < inte_team_list.length; i++){
 					team_list += "," + inte_team_list[i];
 				}
 				out.println("set team_list " + team_list);
 				
+			}else if(type == UploadDataListener.TYPE.IMAGE){
+				// robo_listを準備して、MD5リストを作成。
+				// ローカルとサーバーで比較して、アップデートを実行
+				RoboList robo_list = fdm.get_robolist();
+				String img_floder = sm.get_image_folder_name();
+				ImageList img_list = new ImageList(img_floder, log_mes, robo_list);
+				String local  = img_list.get_md5_list();
+				String remote = get_md5_list();
+				ImageListComparater comp = new ImageListComparater(local, remote);
+				
+				// プログレスバー付きウィンドウを生成して、アップロードを開始する。
+				// 同時にロガーにデータを残していく。
+				int num_of_upload = comp.get_upload_list().size() + comp.get_update_list().size();
+				ProgressWindow p_win = new ProgressWindow(num_of_upload + 1);
+				
+				log_mes.log_println("========= Update Image files =========");
+				log_mes.log_println("[[ ok list ]]");
+				for(String name : comp.get_ok_list()){
+					log_mes.log_println("    * " + name);
+				}
+
+				log_mes.log_println("[[ upload list ]]");
+				for(String name : comp.get_upload_list()){
+					log_mes.log_println("    * " + name);
+					try {
+						send_img(img_list.get(name));
+					} catch (FileNotFoundException e) {
+						log_mes.log_print(e);
+					}
+					p_win.increase();
+				}
+
+				log_mes.log_println("[[ update list ]]");
+				for(String name : comp.get_update_list()){
+					log_mes.log_println("    * " + name);
+					try {
+						send_img(img_list.get(name));
+					} catch (FileNotFoundException e) {
+						log_mes.log_print(e);
+					}
+					p_win.increase();
+				}
+
+				log_mes.log_println("[[ delete list ]]");
+				for(String name : comp.get_delete_list()){
+					log_mes.log_println("    * " + name);
+				}
+				p_win.increase();
+				p_win.close();
+				
 			}
 			
-			try{
-				String result = in.readLine();
-				log_mes.log_println( result + " (get from server)" );
-			} catch (SocketTimeoutException e){
-				log_mes.log_print(e);
-			} catch (IOException e) {
-				log_mes.log_print(e);
+			if(type != UploadDataListener.TYPE.IMAGE){
+				try{
+					String result = in.readLine();
+					log_mes.log_println( result + " (get from server)" );
+				} catch (SocketTimeoutException e){
+					log_mes.log_print(e);
+				} catch (IOException e) {
+					log_mes.log_print(e);
+				}
 			}
 		}else{
-			log_mes.log_println("socket is not opened.");
+			// socket is not opened
+			String message = "Try to update " + type + ". ";
+			log_mes.log_println(message + "But, socket is not opened.");
 		}
 	}
 
@@ -370,5 +433,36 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 		}
 	}
 
+	private class ProgressWindow extends JFrame{
+		private JProgressBar bar;
+		private JLabel label;
+		private int cnt = 0;
+		
+		public ProgressWindow(int max){
+			super("Now Uploading");
+			this.setSize(400, 100);
+			
+			bar = new JProgressBar(0, max);
+			label = new JLabel("0 / " + max);
+			bar.setStringPainted(true);
+			
+			this.setLayout(new BorderLayout());
+			this.add(bar);
+			this.add(label, BorderLayout.SOUTH);
+			
+			this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			this.setVisible(true);
+		}
+		
+		public void increase(){
+			cnt++;
+			bar.setValue(cnt);
+			label.setText(cnt + " / " + bar.getMaximum());
+		}
+		
+		public void close(){
+			this.setVisible(false);
+		}
+	}
 
 }
