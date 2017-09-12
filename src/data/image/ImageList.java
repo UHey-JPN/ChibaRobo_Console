@@ -194,11 +194,9 @@ public class ImageList {
 	 */
 	public String get_md5_list(){
 		String ret = "";
-		int i = 1;
 		for(Image img : image_list){
 			try {
-				ret += img.get_name() + "," + img.get_md5_str();
-				if( image_list.size() != i++ ) ret += CRLF;
+				ret += img.get_name() + "," + img.get_md5_str() + CRLF;
 			} catch (FileNotFoundException e) {
 				log_mes.log_print(e);
 			}
