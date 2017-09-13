@@ -11,7 +11,6 @@ import javax.swing.JProgressBar;
 
 import communication.udp.UdpSocket;
 import data.communication.FileDataManager;
-import data.exception.DataNotFoundException;
 import data.image.Image;
 import data.image.ImageList;
 import data.image.ImageListComparater;
@@ -435,6 +434,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 	}
 
 	private class ProgressWindow extends JFrame{
+		private static final long serialVersionUID = 1L;
 		private JProgressBar bar;
 		private JLabel label;
 		private int cnt = 0;
