@@ -380,6 +380,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 	
 	public synchronized boolean send_img(Image img) {
 		try {
+			soc.setSoTimeout(TIMEOUT);
 			out.println("image add " + img.get_name());	// 画像アップロードのコマンド
 			String[] respo = in.readLine().split(":");	// アップロード先の指示待ち
 			
