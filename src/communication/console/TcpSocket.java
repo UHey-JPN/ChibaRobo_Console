@@ -391,7 +391,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 			img.upload(new InetSocketAddress(addr, port));
 			
 			// サーバーでの処理結果を確認
-			soc.setSoTimeout(0);
+			soc.setSoTimeout(TIMEOUT*10);
 			if(in.readLine().matches("OK")){
 				return true;
 			}else{
