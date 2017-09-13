@@ -325,12 +325,12 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 				log_mes.log_println("========= Update Image files =========");
 				log_mes.log_println("[[ ok list ]]");
 				for(String name : comp.get_ok_list()){
-					log_mes.log_println("    * " + name);
+					log_mes.log_println("  * " + name);
 				}
 
 				log_mes.log_println("[[ upload list ]]");
 				for(String name : comp.get_upload_list()){
-					log_mes.log_println("    * " + name);
+					log_mes.log_println("  * " + name);
 					try {
 						send_img(img_list.get(name));
 					} catch (FileNotFoundException e) {
@@ -341,7 +341,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 
 				log_mes.log_println("[[ update list ]]");
 				for(String name : comp.get_update_list()){
-					log_mes.log_println("    * " + name);
+					log_mes.log_println("  * " + name);
 					try {
 						send_img(img_list.get(name));
 					} catch (FileNotFoundException e) {
@@ -352,7 +352,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 
 				log_mes.log_println("[[ delete list ]]");
 				for(String name : comp.get_delete_list()){
-					log_mes.log_println("    * " + name);
+					log_mes.log_println("  * " + name);
 				}
 				p_win.increase();
 				p_win.close();

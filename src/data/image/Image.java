@@ -50,14 +50,14 @@ public class Image {
 			soc = new Socket();
 			soc.connect(addr, 200);
 			OutputStream out = soc.getOutputStream();
-			log_mes.log_println("connected to image server("+ soc.getRemoteSocketAddress() +")");
+			log_mes.log_println("    -> connected to image server("+ soc.getRemoteSocketAddress() +")");
 			
 			boolean result = this.upload(out);
 			soc.close();
 			if( result ){
-				log_mes.log_println("  -> succeeded to upload " + file.getName());
+				log_mes.log_println("    -> succeeded to upload " + file.getName());
 			}else{
-				log_mes.log_println("  -> failed to upload " + file.getName());
+				log_mes.log_println("    -> failed to upload " + file.getName());
 			}
 			return result;
 			
