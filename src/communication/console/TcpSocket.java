@@ -32,6 +32,7 @@ TcpConnectionListener, SetModeListener, SetScoreListener,
 SetWinnerListener, ClearDataListener, UploadDataListener{
 	public static final String CRLF = "\r\n";
 	public static final int TIMEOUT = 2000;
+	public static final int MAX_FILE_SIZE = 1048576;
 	
 	private Socket soc;
 	private UdpSocket udp;
@@ -378,6 +379,16 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 
 	
 	public synchronized boolean send_img(Image img) {
+		if( img.get_name().matches("^.*[^\\p{ASCII}].*") ){
+			// ASCII以外の文字を含む場合は除外
+			log_mes.log_println("    -> ileagal file name (only ASCII characters).");
+			return false;
+		}
+		if( img.size() > MAX_FILE_SIZE ){
+			// 1MB以下のファイルに限定
+			log_mes.log_println("    -> too large file size (smaller than 1MB).");
+			return false;
+		}
 		try {
 			soc.setSoTimeout(TIMEOUT);
 			out.println("image add " + img.get_name());	// 画像アップロードのコマンド

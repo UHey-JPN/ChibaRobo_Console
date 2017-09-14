@@ -266,6 +266,10 @@ public class FileDataManager implements CheckIntegrityListener {
 				log_mes.log_println("存在しない画像データがあります( robot id = " + robot_img.robot + ", file_name = " + robot_img.image + ")" );
 				ret = false;
 			}
+			if( robot_img.image.matches("^.*[^\\p{ASCII}].*") ){
+				log_mes.log_println("画像ファイル名に全角文字が含まれています( robot id = " + robot_img.robot + ", file_name = " + robot_img.image + ")" );
+				ret = false;
+			}
 		}
 		
 		return ret;
