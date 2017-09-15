@@ -1,8 +1,10 @@
 package communication.dataGetter;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -49,8 +51,9 @@ public class TcpDataGetter implements Runnable {
 		
 		try {
 			soc = new Socket(state.get_server_ip(), state.get_db_port());
-			in = new BufferedReader(new InputStreamReader(soc.getInputStream()));
-			out = new PrintWriter(soc.getOutputStream(), true);
+			in = new BufferedReader(new InputStreamReader(soc.getInputStream(), "UTF-8"));
+			OutputStreamWriter o_stream = new OutputStreamWriter(soc.getOutputStream(), "UTF-8");
+			out = new PrintWriter(new BufferedWriter(o_stream), true);
 			
 			// set data type
 			out.println( type.label() + ",utf-8");
