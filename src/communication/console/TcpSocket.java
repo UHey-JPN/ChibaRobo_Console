@@ -20,9 +20,11 @@ import window.logger.LogMessageAdapter;
 
 import java.awt.BorderLayout;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 
@@ -73,8 +75,9 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 			
 			// login process
 			try {
-				in = new BufferedReader(new InputStreamReader(soc.getInputStream()));
-				out = new PrintWriter(soc.getOutputStream(), true);
+				in = new BufferedReader(new InputStreamReader(soc.getInputStream(), "UTF-8"));
+				OutputStreamWriter o_stream = new OutputStreamWriter(soc.getOutputStream(), "UTF-8");
+				out = new PrintWriter(new BufferedWriter(o_stream), true);
 				
 				// get key and make pass
 				String[] str_key;
@@ -99,9 +102,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 					for(int i = 0; i < c_pass.length; i++){
 						c_pass[i] = (char)(((int)c_pass[i] * key[0] + key[1]) % 256 );
 					}
-					//out.print( (new String(c_pass)) + CRLF);
-					//out.println( new String(c_pass) );
-					out.println( "chiba.robot.studio" );
+					out.printf( "chiba.robot.studio"  + CRLF);
 					log_mes.log_println("Send password.");
 				}
 				
@@ -152,7 +153,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 	public synchronized void set_num_of_team(){
 		if( soc != null ){
 			// チーム数を取得
-			out.println("get team_num");
+			out.printf("get team_num" + CRLF);
 			try {
 				String l = in.readLine();
 				if( sm.get_num_of_teams() == Integer.parseInt(l) ) return;
@@ -162,7 +163,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 				log_mes.log_print(e);
 			}
 			
-			out.println("set team_num " + sm.get_num_of_teams());
+			out.printf("set team_num " + sm.get_num_of_teams() + CRLF);
 			try{
 				String result = in.readLine();
 				log_mes.log_println( result + " (get from server)" );
@@ -180,7 +181,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 	@Override
 	public synchronized void set_mode(String mode){
 		if( soc != null ){
-			out.println("set mode " + mode);
+			out.printf("set mode " + mode + CRLF);
 			try{
 				String result = in.readLine();
 				log_mes.log_println( result + " (get from server)" );
@@ -198,7 +199,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 	@Override
 	public void set_score(int side0, int side1) {
 		if( soc != null ){
-			out.println("set score " + side0 + " " + side1 );
+			out.printf("set score " + side0 + " " + side1  + CRLF);
 			try{
 				String result = in.readLine();
 				log_mes.log_println( result + " (get from server)" );
@@ -217,7 +218,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 	public void set_winner(int side) {
 		if( soc != null ){
 			if( side == 0 | side == 1){
-				out.println("set winner side" + side );
+				out.printf("set winner side" + side  + CRLF);
 				try{
 					String result = in.readLine();
 					log_mes.log_println( result + " (get from server)" );
@@ -248,7 +249,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 	public void clear_data(int type) {
 		if( soc != null ){
 			if( type == ClearDataListener.TYPE_ROBOT){
-				out.println("clear robot");
+				out.printf("clear robot" + CRLF);
 				try{
 					String result = in.readLine();
 					log_mes.log_println( result + " (get from server)" );
@@ -258,7 +259,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 					log_mes.log_print(e);
 				}
 			}else if( type == ClearDataListener.TYPE_TEAM){
-				out.println("clear team");
+				out.printf("clear team" + CRLF);
 				try{
 					String result = in.readLine();
 					log_mes.log_println( result + " (get from server)" );
@@ -268,7 +269,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 					log_mes.log_print(e);
 				}
 			}else{
-				System.out.println("error in arguments");
+				System.out.printf("error in arguments" + CRLF);
 			}
 		}else{
 			log_mes.log_println("socket is not opened.");
@@ -281,24 +282,24 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 	public void update_data(TYPE type) {
 		if( soc != null ){
 			if(type == UploadDataListener.TYPE.ROBOT){
-				out.println("add robot");
+				out.printf("add robot" + CRLF);
 				ArrayList<String> robot_list = fdm.get_robot_array();
 				for(String robot : robot_list){
 					if(robot.length() > 5){
-						out.println(robot);
+						out.printf(robot + CRLF);
 					}
 				}
-				out.println("EOF");
+				out.printf("EOF" + CRLF);
 				
 			}else if(type == UploadDataListener.TYPE.TEAM){
-				out.println("add team");
+				out.printf("add team" + CRLF);
 				ArrayList<String> team_list = fdm.get_team_array();
 				for(String team : team_list){
 					if(team.length() > 4){
-						out.println(team);
+						out.printf(team + CRLF);
 					}
 				}
-				out.println("EOF");
+				out.printf("EOF" + CRLF);
 				
 			}else if(type == UploadDataListener.TYPE.TOURNAMENT){
 				int[] inte_team_list = fdm.get_tournament_array();
@@ -306,7 +307,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 				for(int i = 1; i < inte_team_list.length; i++){
 					team_list += "," + inte_team_list[i];
 				}
-				out.println("set team_list " + team_list);
+				out.printf("set team_list " + team_list + CRLF);
 				
 			}else if(type == UploadDataListener.TYPE.IMAGE){
 				// robo_listを準備して、MD5リストを作成。
@@ -391,7 +392,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 		}
 		try {
 			soc.setSoTimeout(TIMEOUT);
-			out.println("image add " + img.get_name());	// 画像アップロードのコマンド
+			out.printf("image add " + img.get_name());	// 画像アップロードのコマ + CRLFンド
 			String[] respo = in.readLine().split(":");	// アップロード先の指示待ち
 			
 			if( !respo[0].equals("OK") ) return false;
@@ -426,7 +427,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 	public String get_md5_list() {
 		String ret = "";
 		if( soc != null ){
-			out.println("image list");
+			out.printf("image list" + CRLF);
 			try{
 				String result;
 				while( !(result = in.readLine()).matches("") ){
