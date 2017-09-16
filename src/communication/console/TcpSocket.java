@@ -392,7 +392,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 		}
 		try {
 			soc.setSoTimeout(TIMEOUT);
-			out.printf("image add " + img.get_name());	// 画像アップロードのコマ + CRLFンド
+			out.printf("image add " + img.get_name() + CRLF);	// 画像アップロードのコマンド
 			String[] respo = in.readLine().split(":");	// アップロード先の指示待ち
 			
 			if( !respo[0].equals("OK") ) return false;
