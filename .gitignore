@@ -1,0 +1,11 @@
+/bin/
+/.*
+!.gitignore
+/.settings
+*.DS_Store
+
+/resource/key.png
+
+/DB/img/*
+!/DB/img/Dummy.jpg
+!/DB/img/Dummy.png
