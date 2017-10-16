@@ -391,22 +391,33 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 			return false;
 		}
 		try {
-			soc.setSoTimeout(TIMEOUT);
-			out.printf("image add " + img.get_name() + CRLF);	// 画像アップロードのコマンド
-			String[] respo = in.readLine().split(":");	// アップロード先の指示待ち
-			
-			if( !respo[0].equals("OK") ) return false;
-			
-			String[] soc_info = respo[1].split(",");
-			String addr = soc_info[0];
-			int port = Integer.parseInt(soc_info[1]);
-			img.upload(new InetSocketAddress(addr, port));
+			String[] respo;
+			try {
+				soc.setSoTimeout(TIMEOUT);
+				out.printf("image add " + img.get_name() + CRLF);	// 画像アップロードのコマンド
+				respo = in.readLine().split(":");	// アップロード先の指示待ち
+				
+				if( !respo[0].equals("OK") ) return false;
+				
+				String[] soc_info = respo[1].split(",");
+				String addr = soc_info[0];
+				int port = Integer.parseInt(soc_info[1]);
+				img.upload(new InetSocketAddress(addr, port));
+			} catch(SocketTimeoutException e) {
+				log_mes.log_println("Server do not send ip and port.(while sending image " + img.get_name() + ")");
+				return false;
+			}
 			
 			// サーバーでの処理結果を確認
-			soc.setSoTimeout(TIMEOUT*10);
-			if(in.readLine().matches("OK")){
-				return true;
-			}else{
+			try {
+				soc.setSoTimeout(TIMEOUT*10);
+				if(in.readLine().matches("OK")){
+					return true;
+				}else{
+					return false;
+				}
+			} catch(SocketTimeoutException e) {
+				log_mes.log_println("Server do not send result of uplaod.(while sending image " + img.get_name() + ")");
 				return false;
 			}
 		} catch (FileNotFoundException e) {
