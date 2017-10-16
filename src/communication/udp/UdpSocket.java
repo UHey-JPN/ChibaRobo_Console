@@ -1,9 +1,6 @@
 package communication.udp;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -20,6 +17,8 @@ import data.communication.StateData;
 import window.logger.LogMessageAdapter;
 
 public class UdpSocket implements Runnable{
+	static final String LINE_SEPARATOR_PATTERN =  "\r\n|[\n\r\u2028\u2029\u0085]";
+
 	public static final int PORT_NUM = 58239;
 	public static final int BUF_SIZE = 2048;
 	private DatagramSocket soc;
@@ -110,8 +109,7 @@ public class UdpSocket implements Runnable{
 		String[] robot_desc = {pac_data[7], pac_data[8], pac_data[10], pac_data[11]};
 		
 		if( show_state != null ){
-			if( show_state.get_pac_id() == pac_id )
-				return;
+			if( show_state.get_pac_id() == pac_id ) return;
 		}
 		
 		show_state = new StateData( 
@@ -216,8 +214,8 @@ public class UdpSocket implements Runnable{
 	public void run() {
 		while(true){
 			byte[] buf = new byte[BUF_SIZE];
-			String str_packet;
 			DatagramPacket pac = new DatagramPacket(buf, buf.length);
+			String str_packet;
 			
 			//----------------------------------------
 			// UDPソケットへのデータ到着待ち
@@ -238,23 +236,11 @@ public class UdpSocket implements Runnable{
 			}
 			
 			//----------------------------------------
-			// processing packet
-			// String[] pac_split = str_packet.split( CRLF );
-			String[] pac_split;
-			{
-				BufferedReader buf_reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(buf)));
-				ArrayList<String> buf_array = new ArrayList<String>();
-				String line;
-				try {
-					while( (line = buf_reader.readLine()) != null){
-						buf_array.add(line);
-					}
-				} catch (IOException e) {
-					log_mes.log_print(e);
-				}
-				pac_split = buf_array.toArray(new String[buf_array.size()]);
-			}
+			// 改行コードで分割
+			String[] pac_split = str_packet.split( LINE_SEPARATOR_PATTERN );
 			
+			//----------------------------------------
+			// 受信パケットの分類とそれに伴う処理
 			if( pac_split[0].equals("show") ){
 				// log_mes.log_println("Get Packet - show");
 				process_state_packet(pac_split);
