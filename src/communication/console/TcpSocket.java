@@ -5,9 +5,12 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.border.EmptyBorder;
 
 import communication.udp.UdpSocket;
 import data.communication.FileDataManager;
@@ -19,6 +22,10 @@ import main.SettingManager;
 import window.logger.LogMessageAdapter;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -46,6 +53,9 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 	private LogMessageAdapter log_mes;
 	
 	private FileDataManager fdm;
+	
+	private ProgressWindow p_win = new ProgressWindow();
+
 
 	public TcpSocket(UdpSocket udp, LogMessageAdapter log_mes, SettingManager sm, FileDataManager fdm) {
 		this.sm = sm;
@@ -322,7 +332,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 				// プログレスバー付きウィンドウを生成して、アップロードを開始する。
 				// 同時にロガーにデータを残していく。
 				int num_of_upload = comp.get_upload_list().size() + comp.get_update_list().size();
-				ProgressWindow p_win = new ProgressWindow(num_of_upload + 1);
+				p_win.reset(num_of_upload+1);
 				
 				log_mes.log_println("========= Update Image files =========");
 				log_mes.log_println("[[ ok list ]]");
@@ -357,7 +367,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 					log_mes.log_println("  * " + name);
 				}
 				p_win.increase();
-				p_win.close();
+				p_win.closeable();
 				
 			}
 			
@@ -456,26 +466,55 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 		}
 	}
 
-	private class ProgressWindow extends JFrame{
+	private class ProgressWindow extends JFrame implements ActionListener{
 		private static final long serialVersionUID = 1L;
 		private JProgressBar bar;
 		private JLabel label;
+		private JButton btn;
 		private int cnt = 0;
 		
-		public ProgressWindow(int max){
+		public ProgressWindow(){
 			super("Now Uploading");
 			this.setSize(400, 100);
+			this.setLocationRelativeTo(null);
+			this.setAlwaysOnTop(true);
+			this.setResizable(false);
 			
-			bar = new JProgressBar(0, max);
-			label = new JLabel("0 / " + max);
-			bar.setStringPainted(true);
+			JPanel p = new JPanel();
+			p.setOpaque(true);
+			p.setBackground(Color.white);
+			p.setBorder(new EmptyBorder(0,10,0,10));
 			
-			this.setLayout(new BorderLayout());
-			this.add(bar);
-			this.add(label, BorderLayout.SOUTH);
+			bar = new JProgressBar(0, 100);
 			
-			this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			btn = new JButton("OK");
+			btn.addActionListener(this);
+			
+			label = new JLabel("0 / " + 100);
+			label.setHorizontalAlignment(JLabel.CENTER);
+			label.setFont(new Font("", Font.PLAIN, 20));
+			label.setBorder(new EmptyBorder(0,10,0,0));
+			
+			JPanel btn_panel = new JPanel();
+			btn_panel.setOpaque(false);
+			btn_panel.add(btn);
+
+			p.setLayout(new BorderLayout());
+			p.add(bar);
+			p.add(label, BorderLayout.EAST);
+			p.add(btn_panel, BorderLayout.SOUTH);
+		
+			getContentPane().add(p, BorderLayout.CENTER);
+		}
+		
+		public void reset(int max){
+			cnt = 0;
+			bar.setMaximum(max);
+			bar.setValue(cnt);
+			btn.setEnabled(false);
+			this.setTitle("Now Uploading");
 			this.setVisible(true);
+			this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		}
 		
 		public void increase(){
@@ -484,7 +523,14 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 			label.setText(cnt + " / " + bar.getMaximum());
 		}
 		
-		public void close(){
+		public void closeable(){
+			this.setTitle("Complete Uploading");
+			this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+			btn.setEnabled(true);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
 			this.setVisible(false);
 		}
 	}
