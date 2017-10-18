@@ -346,7 +346,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 					try {
 						send_img(img_list.get(name));
 					} catch (FileNotFoundException e) {
-						log_mes.log_print(e);
+						e.printStackTrace();
 					}
 					p_win.increase();
 				}
@@ -512,6 +512,7 @@ SetWinnerListener, ClearDataListener, UploadDataListener{
 			bar.setMaximum(max);
 			bar.setValue(cnt);
 			btn.setEnabled(false);
+			label.setText(cnt + " / " + bar.getMaximum());
 			this.setTitle("Now Uploading");
 			this.setVisible(true);
 			this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
