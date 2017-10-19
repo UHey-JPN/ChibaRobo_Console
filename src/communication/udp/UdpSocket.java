@@ -37,23 +37,13 @@ public class UdpSocket implements Runnable{
 	ArrayList<TournamentUpdateListener> list_tournament_listener = new ArrayList<TournamentUpdateListener>();
 
 	// ------------------------------------
-	// UDPパケット振り分け用のクラス等
-	// クラスPacketProcesserの宣言
-	public StatePacketProcesser state_packet_processer = new StatePacketProcesser();
-	public TournamentPacketProcesser tournament_packet_processer = new TournamentPacketProcesser();
-	public ServerPacketProcesser server_packet_processer = new ServerPacketProcesser();
-
+	// UDPパケット振り分け用のインターフェース
 	private interface PacketProcesser{
+		public String get_pac_name();
 		public void process_packet(String[] pac_data, DatagramPacket pac);
 	}
-	Map<String, PacketProcesser> processer_map = new HashMap<String, PacketProcesser>() {
-		private static final long serialVersionUID = 1L;
-		{
-			put("show", state_packet_processer);
-			put("tournament", tournament_packet_processer);
-			put("server", server_packet_processer);
-		}
-	};
+	
+	Map<String, PacketProcesser> processer_map;
 
 	public UdpSocket(Executor ex, LogMessageAdapter log_mes) {
 		// hold value
@@ -70,6 +60,13 @@ public class UdpSocket implements Runnable{
 			JOptionPane.showMessageDialog(f, label);
 			System.exit(1);
 		}
+
+		processer_map = new HashMap<String, PacketProcesser>() {
+			private static final long serialVersionUID = 1L;
+			{
+				for(PacketProcesser p : processer_list) put(p.get_pac_name(), p);
+			}
+		};
 		
 		ex.execute(this);
 		
@@ -100,15 +97,24 @@ public class UdpSocket implements Runnable{
 	public void add_StateUpdateListener(StateUpdateListener listener){
 		list_state_listener.add(listener);
 	}
+	public void add_TournamentUpdateListener(TournamentUpdateListener listener){
+		list_tournament_listener.add(listener);
+	}
 	public void add_ServerUpdateListener(ServerUpdateListener listener){
 		list_server_listener.add(listener);
 	}
 
 
 	///////////////////////////////////////////////////////////////////
-	// State Packet関係のプロセッサー
+	// PacketProcesserを定義
 	///////////////////////////////////////////////////////////////////
-	private class StatePacketProcesser implements PacketProcesser{
+	PacketProcesser processer_list[] = {
+			
+	//----------------------------------------------
+	// Show State Packet関係のプロセッサー
+	new PacketProcesser() {
+		@Override public String get_pac_name(){ return "show"; }
+		
 		private void call_state_listener(){
 			for(StateUpdateListener l : list_state_listener){
 				l.state_update( show_state );
@@ -157,16 +163,13 @@ public class UdpSocket implements Runnable{
 				return;
 			}	
 		}
-	}
+	},
 	
-
-	///////////////////////////////////////////////////////////////////
+	//----------------------------------------------
 	// Tournament Packet関係のプロセッサー
-	///////////////////////////////////////////////////////////////////
-	public void add_TournamentUpdateListener(TournamentUpdateListener listener){
-		list_tournament_listener.add(listener);
-	}
-	private class TournamentPacketProcesser implements PacketProcesser{
+	new  PacketProcesser() {
+		@Override public String get_pac_name(){ return "tournament"; }
+
 		private void call_tournament_listener(int[] result){
 			for(TournamentUpdateListener l : list_tournament_listener){
 				l.update_tournament_result(result);
@@ -184,13 +187,13 @@ public class UdpSocket implements Runnable{
 			call_tournament_listener(result);
 			
 		}
-	}
+	},
 	
-	
-	///////////////////////////////////////////////////////////////////
+	//----------------------------------------------
 	// Server Packet関係のプロセッサー
-	///////////////////////////////////////////////////////////////////
-	private class ServerPacketProcesser implements PacketProcesser {
+	new PacketProcesser() {
+		@Override public String get_pac_name(){ return "server"; }
+
 		public void call_server_data(){
 			for(ServerUpdateListener l : list_server_listener){
 				l.server_update( server_data );
@@ -241,6 +244,7 @@ public class UdpSocket implements Runnable{
 			server_socket_receive = true;
 		}
 	}
+	};
 
 	///////////////////////////////////////////////////////////////////
 	// UDP Socket Process
