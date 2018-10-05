@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,12 +52,14 @@ public class UdpSocket implements Runnable{
 		
 		// open socket
 		try {
-			soc = new DatagramSocket(PORT_NUM);
+			soc = new DatagramSocket(null);
+			soc.setReuseAddress(true);
+			soc.bind(new InetSocketAddress(PORT_NUM));
 			log_mes.log_println("Open UDP Port(" + soc.getLocalPort() + ")");
 		} catch (SocketException e) {
 			e.printStackTrace();
 			JFrame f = new JFrame();
-			JLabel label = new JLabel("UDP Port 58239 is already used.");
+			JLabel label = new JLabel("Could not open UDP port 58239. (is another process using it?)");
 			JOptionPane.showMessageDialog(f, label);
 			System.exit(1);
 		}
